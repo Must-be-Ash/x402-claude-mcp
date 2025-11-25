@@ -89,6 +89,16 @@ export class PaymentHandler {
    */
   private async makeRequest(endpoint: Endpoint, params: unknown): Promise<EndpointCallResult> {
     try {
+      // Build URL with query parameters for GET/DELETE requests
+      let url = endpoint.url;
+      if (['GET', 'DELETE'].includes(endpoint.method) && params && typeof params === 'object') {
+        const queryParams = new URLSearchParams();
+        Object.entries(params as Record<string, any>).forEach(([key, value]) => {
+          queryParams.append(key, String(value));
+        });
+        url = `${endpoint.url}?${queryParams.toString()}`;
+      }
+
       // Prepare request options
       const requestOptions: RequestInit = {
         method: endpoint.method,
@@ -103,7 +113,7 @@ export class PaymentHandler {
       }
 
       // Make request with x402 payment support
-      const response = await this.wrappedFetch(endpoint.url, requestOptions);
+      const response = await this.wrappedFetch(url, requestOptions);
 
       // Extract payment response header (transaction hash)
       const paymentHeader = response.headers.get('X-PAYMENT-RESPONSE');
