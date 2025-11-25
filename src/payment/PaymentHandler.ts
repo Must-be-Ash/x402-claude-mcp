@@ -115,9 +115,10 @@ export class PaymentHandler {
       // Make request with x402 payment support
       const response = await this.wrappedFetch(url, requestOptions);
 
-      // Extract payment response header (transaction hash)
-      const paymentHeader = response.headers.get('X-PAYMENT-RESPONSE');
-      const txHash = paymentHeader ? this.extractTxHash(paymentHeader) : undefined;
+      // Extract payment info from headers
+      const paymentInfo = this.extractPaymentInfo(response);
+      const txHash = paymentInfo.txHash;
+      const amount = paymentInfo.amount;
 
       // Check response status
       if (!response.ok) {
@@ -132,15 +133,24 @@ export class PaymentHandler {
       // Parse response JSON
       const data = await response.json();
 
-      logger.debug('Request successful', {
-        endpoint: endpoint.id,
-        txHash,
-        paymentMade: !!txHash,
-      });
+      // Log with payment details
+      if (txHash) {
+        logger.info('Payment successful', {
+          endpoint: endpoint.id,
+          txHash,
+          amount: amount || 'unknown',
+          baseScanUrl: `https://basescan.org/tx/${txHash}`,
+        });
+      } else {
+        logger.debug('Request successful (no payment detected)', {
+          endpoint: endpoint.id,
+        });
+      }
 
       return {
         data,
         txHash,
+        amount,
         paymentMade: !!txHash,
       };
     } catch (error) {
@@ -169,26 +179,58 @@ export class PaymentHandler {
   }
 
   /**
-   * Extract transaction hash from X-PAYMENT-RESPONSE header
-   * The header format may vary, so we try to parse it safely
+   * Extract transaction hash and amount from response
+   * Supports multiple formats from different x402 endpoints
    */
-  private extractTxHash(paymentHeader: string): string | undefined {
-    try {
-      // Try parsing as JSON first
-      const parsed = JSON.parse(paymentHeader);
-      if (parsed.txHash) {
-        return parsed.txHash;
-      }
-      if (parsed.transactionHash) {
-        return parsed.transactionHash;
-      }
-    } catch {
-      // If not JSON, treat as raw tx hash
-      if (paymentHeader.startsWith('0x')) {
-        return paymentHeader;
+  private extractPaymentInfo(response: Response): { txHash?: string; amount?: string } {
+    // Format 1: X-PAYMENT-RESPONSE header (used by some x402 services)
+    // Can be base64-encoded JSON or plain JSON
+    const paymentResponseHeader = response.headers.get('X-PAYMENT-RESPONSE');
+    if (paymentResponseHeader) {
+      try {
+        // Try base64 decoding first (minifetch/x402 standard format)
+        const decoded = Buffer.from(paymentResponseHeader, 'base64').toString('utf-8');
+        const parsed = JSON.parse(decoded);
+        return {
+          txHash: parsed.transaction || parsed.txHash || parsed.transactionHash || parsed.tx_hash,
+          amount: parsed.amount || parsed.value,
+        };
+      } catch {
+        // Fallback: try direct JSON parsing (not base64)
+        try {
+          const parsed = JSON.parse(paymentResponseHeader);
+          return {
+            txHash: parsed.transaction || parsed.txHash || parsed.transactionHash || parsed.tx_hash,
+            amount: parsed.amount || parsed.value,
+          };
+        } catch {
+          // Try parsing as "tx_hash:0x..." format
+          const match = paymentResponseHeader.match(/tx_hash:([0-9a-fA-Fx]+)/);
+          if (match) {
+            return { txHash: match[1] };
+          }
+          // If not JSON and not "tx_hash:" format, treat as raw tx hash
+          if (paymentResponseHeader.startsWith('0x')) {
+            return { txHash: paymentResponseHeader };
+          }
+        }
       }
     }
 
-    return undefined;
+    // Format 2: X-Transaction-Hash header (alternative format)
+    const txHeader = response.headers.get('X-Transaction-Hash');
+    if (txHeader) {
+      return { txHash: txHeader };
+    }
+
+    // Format 3: Log all response headers for debugging
+    const allHeaders: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+      allHeaders[key.toLowerCase()] = value;
+    });
+
+    logger.debug('Response headers (no payment info found)', { headers: allHeaders });
+
+    return {};
   }
 }

@@ -82,6 +82,9 @@ export interface EndpointCallResult {
   /** Transaction hash from the payment (if payment was made) */
   txHash?: string;
 
+  /** Payment amount in USDC (if payment was made) */
+  amount?: string;
+
   /** Whether a payment was required and executed */
   paymentMade?: boolean;
 }
