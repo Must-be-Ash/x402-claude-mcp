@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "postbuild": "chmod +x dist/index.js",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,8 +24,16 @@
     "autonomous",
     "micropayments"
   ],
-  "author": "",
-  "license": "Apache-2.0",
+  "author": "Must-be-Ash (https://twitter.com/must_be_ash)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Must-be-Ash/x402-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Must-be-Ash/x402-agent/issues"
+  },
+  "homepage": "https://github.com/Must-be-Ash/x402-agent#readme",
   "engines": {
     "node": ">=18.0.0"
   },

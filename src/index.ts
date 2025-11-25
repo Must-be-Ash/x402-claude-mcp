@@ -11,6 +11,8 @@ import { EndpointRegistry } from './registry/EndpointRegistry.js';
 import { validateConfig } from './registry/validator.js';
 import { WalletManager } from './payment/WalletManager.js';
 import { PaymentHandler } from './payment/PaymentHandler.js';
+import { handleListTools } from './handlers/listTools.js';
+import { handleCallTool } from './handlers/callTool.js';
 import { logger } from './utils/logger.js';
 import { ConfigError } from './utils/errors.js';
 
@@ -66,67 +68,31 @@ async function main() {
     // Create MCP server
     const server = createMCPServer();
 
-    // Register each endpoint as a tool
+    // Register each endpoint as a tool using the handler
     const endpoints = registry.getAllEndpoints();
     for (const endpoint of endpoints) {
       logger.debug(`Registering tool: ${endpoint.id}`);
 
-      // Register tool using MCP server's registerTool method
       server.registerTool(
         endpoint.id,
         {
           description: endpoint.description,
+          // Schema validation is handled by callTool handler
         },
         async (args: any) => {
-          try {
-            logger.debug(`Executing tool: ${endpoint.id}`, { arguments: args });
-
-            // Check if endpoint is trusted
-            if (!endpoint.trusted) {
-              throw new Error(
-                `Endpoint "${endpoint.id}" is not trusted for autonomous execution. ` +
-                `Set "trusted": true in the endpoint configuration.`
-              );
-            }
-
-            // Call the endpoint with payment handling
-            const result = await paymentHandler.callEndpoint(endpoint, args);
-
-            // Return success response
-            return {
-              content: [
-                {
-                  type: 'text' as const,
-                  text: JSON.stringify(result, null, 2),
-                },
-              ],
-            };
-          } catch (error) {
-            logger.error(`Tool execution failed: ${endpoint.id}`, {
-              error: error instanceof Error ? error.message : 'Unknown error',
-            });
-
-            // Return error response
-            return {
-              content: [
-                {
-                  type: 'text' as const,
-                  text: JSON.stringify(
-                    {
-                      error: error instanceof Error ? error.message : 'Unknown error',
-                      tool: endpoint.id,
-                    },
-                    null,
-                    2
-                  ),
-                },
-              ],
-              isError: true,
-            };
-          }
+          // Use the callTool handler
+          const request = {
+            params: {
+              name: endpoint.id,
+              arguments: args,
+            },
+          };
+          return await handleCallTool(request, registry, paymentHandler);
         }
       );
     }
+
+    const transport = createStdioTransport();
 
     // Set up graceful shutdown
     const shutdown = async () => {
@@ -147,13 +113,12 @@ async function main() {
     process.on('SIGTERM', shutdown);
 
     // Start the server
-    const transport = createStdioTransport();
     logger.info('Connecting to stdio transport...');
     await server.connect(transport);
 
     logger.info('x402 Agent MCP Server is ready', {
       version: packageJson.version,
-      endpoints: endpoints.map(e => e.id),
+      endpoints: registry.getAllEndpoints().map(e => e.id),
     });
 
     // Keep the process running
