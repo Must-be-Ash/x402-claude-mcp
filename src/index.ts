@@ -15,6 +15,7 @@ import { handleListTools } from './handlers/listTools.js';
 import { handleCallTool } from './handlers/callTool.js';
 import { logger } from './utils/logger.js';
 import { ConfigError } from './utils/errors.js';
+import { jsonSchemaToZod } from './utils/schemaConverter.js';
 
 // Get package.json version
 const __filename = fileURLToPath(import.meta.url);
@@ -29,7 +30,11 @@ const packageJson = JSON.parse(
 async function main() {
   try {
     // Load environment variables
+    // Silence dotenv output to prevent JSON-RPC protocol corruption
+    const originalLog = console.log;
+    console.log = () => {};
     config();
+    console.log = originalLog;
 
     logger.info('Starting x402 Agent MCP Server...');
 
@@ -73,23 +78,42 @@ async function main() {
     for (const endpoint of endpoints) {
       logger.debug(`Registering tool: ${endpoint.id}`);
 
-      server.registerTool(
-        endpoint.id,
-        {
-          description: endpoint.description,
-          // Schema validation is handled by callTool handler
-        },
-        async (args: any) => {
-          // Use the callTool handler
-          const request = {
-            params: {
-              name: endpoint.id,
-              arguments: args,
-            },
-          };
-          return await handleCallTool(request, registry, paymentHandler);
-        }
-      );
+      try {
+        // Convert JSON Schema to Zod shape (plain object with Zod properties)
+        const zodSchema = jsonSchemaToZod(endpoint.parameters);
+
+        server.registerTool(
+          endpoint.id,
+          {
+            description: endpoint.description,
+            inputSchema: zodSchema,
+          },
+          async (args: any) => {
+            // Use the callTool handler
+            const request = {
+              params: {
+                name: endpoint.id,
+                arguments: args,
+              },
+            };
+            return await handleCallTool(request, registry, paymentHandler);
+          }
+        );
+
+        const paramCount = zodSchema ? Object.keys(zodSchema).length : 0;
+        logger.debug(`Tool registered successfully: ${endpoint.id}`, {
+          hasSchema: !!zodSchema,
+          parameterCount: paramCount,
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        logger.error(`Failed to register tool: ${endpoint.id}`, {
+          error: errorMessage,
+        });
+        throw new ConfigError(
+          `Failed to register tool "${endpoint.id}": ${errorMessage}`
+        );
+      }
     }
 
     const transport = createStdioTransport();

@@ -46,7 +46,7 @@
     "dotenv": "^17.2.3",
     "viem": "^2.40.2",
     "x402-fetch": "^0.7.3",
-    "zod": "^4.1.13"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

@@ -76,3 +76,21 @@ export class TrustError extends X402AgentError {
     this.endpointId = endpointId;
   }
 }
+
+/**
+ * Schema conversion errors (JSON Schema to Zod conversion failures)
+ */
+export class SchemaConversionError extends X402AgentError {
+  public readonly schemaType?: string;
+  public readonly propertyPath?: string;
+
+  constructor(
+    message: string,
+    schemaType?: string,
+    propertyPath?: string
+  ) {
+    super(message);
+    this.schemaType = schemaType;
+    this.propertyPath = propertyPath;
+  }
+}

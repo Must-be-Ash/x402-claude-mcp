@@ -81,13 +81,17 @@ function validateWalletConfig(wallet: WalletConfig): void {
     throw new Error('Wallet privateKey must be a string');
   }
 
-  // Check private key format (either 0x... hex or ${...} env var)
+  // Check private key format (hex, base64, or env var)
   const isHexKey = /^0x[0-9a-fA-F]{64}$/.test(wallet.privateKey);
+  const isBase64Key = /^[A-Za-z0-9+/]+=*$/.test(wallet.privateKey) && wallet.privateKey.length >= 32;
   const isEnvVar = /^\$\{[^}]+\}$/.test(wallet.privateKey);
-  if (!isHexKey && !isEnvVar) {
+
+  if (!isHexKey && !isBase64Key && !isEnvVar) {
     throw new Error(
-      'Wallet privateKey must be either a valid hex string (0x...) ' +
-      'or an environment variable reference (${VAR_NAME})'
+      'Wallet privateKey must be either:\n' +
+      '  - A valid hex string starting with 0x (0x...)\n' +
+      '  - A base64-encoded key\n' +
+      '  - An environment variable reference (${VAR_NAME})'
     );
   }
 }
