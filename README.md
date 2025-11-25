@@ -288,7 +288,7 @@ Only endpoints with `"trusted": true` can be called autonomously. This prevents:
 
 ## License
 
-MIT
+Apache-2.0
 
 ## Contributing
 

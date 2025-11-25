@@ -25,7 +25,7 @@
     "micropayments"
   ],
   "author": "Must-be-Ash (https://twitter.com/must_be_ash)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Must-be-Ash/x402-agent.git"
