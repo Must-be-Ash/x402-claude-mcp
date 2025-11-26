@@ -54,7 +54,7 @@ tsx src/index.ts
 
 ### Configuration Flow
 
-1. Loads `~/.x402-agent/endpoints.json` (or path from `X402_CONFIG_PATH`)
+1. Loads `~/.x402-claude-mcp/endpoints.json` (or path from `X402_CONFIG_PATH`)
 2. Interpolates environment variables using `${VAR_NAME}` syntax
 3. Validates config structure and required fields
 4. Builds endpoint lookup map for O(1) access

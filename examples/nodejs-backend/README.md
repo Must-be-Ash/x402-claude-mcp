@@ -1,6 +1,6 @@
 # Node.js Backend Integration Example
 
-This example shows how to integrate the x402 Agent MCP Server into a Node.js backend application.
+This example shows how to integrate the x402 Claude MCP Server into a Node.js backend application.
 
 ## Use Case
 
@@ -16,7 +16,7 @@ You're building a web application with a Node.js backend that needs to make x402
 ### 1. Install dependencies
 
 ```bash
-npm install @modelcontextprotocol/sdk @x402-agent/mcp-server
+npm install @modelcontextprotocol/sdk x402-claude-mcp
 ```
 
 ### 2. Configure environment
@@ -47,7 +47,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 // Start MCP server as a child process
 const transport = new StdioClientTransport({
   command: 'npx',
-  args: ['@x402-agent/mcp-server'],
+  args: ['x402-claude-mcp'],
   env: {
     PRIVATE_KEY: process.env.PRIVATE_KEY,
     X402_CONFIG_PATH: './endpoints.json'
@@ -167,7 +167,7 @@ setInterval(async () => {
 ## Troubleshooting
 
 ### "MCP server not starting"
-- Check that `@x402-agent/mcp-server` is installed
+- Check that `x402-claude-mcp` is installed
 - Verify PRIVATE_KEY is set
 - Check endpoints.json syntax
 

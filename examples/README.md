@@ -1,4 +1,4 @@
-# x402 Agent MCP Server - Examples
+# x402 Claude MCP Server - Examples
 
 This directory contains examples of how to use the x402 Agent MCP Server in different scenarios.
 
@@ -110,7 +110,7 @@ DEBUG=true                         # Optional: Enable debug logging
 ## Common Issues
 
 ### "MCP server not starting"
-- Check that `@x402-agent/mcp-server` is installed
+- Check that `x402-claude-mcp` is installed
 - Verify PRIVATE_KEY is set
 - Check endpoints.json syntax
 
@@ -127,7 +127,7 @@ DEBUG=true                         # Optional: Enable debug logging
 ## Learn More
 
 - [Main README](../README.md) - Full documentation
-- [GitHub Repository](https://github.com/Must-be-Ash/x402-agent)
+- [GitHub Repository](https://github.com/Must-be-Ash/x402-claude-mcp)
 - [x402 Protocol](https://x402.org/)
 - [Coinbase Developer Platform](https://docs.cdp.coinbase.com/)
 
@@ -143,5 +143,5 @@ Ideas for new examples:
 
 ## Support
 
-- GitHub Issues: https://github.com/Must-be-Ash/x402-agent/issues
-- Documentation: https://github.com/Must-be-Ash/x402-agent#readme
+- GitHub Issues: https://github.com/Must-be-Ash/x402-claude-mcp/issues
+- Documentation: https://github.com/Must-be-Ash/x402-claude-mcp#readme

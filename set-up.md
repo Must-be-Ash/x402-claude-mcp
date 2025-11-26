@@ -1,12 +1,12 @@
   What You Do:
 
   1. In your /Users/ashnouruzi/x402-agent-demo project:
-    - Add x402-agent as an MCP server to your LLM chat UI
+    - Add x402-claude-mcp as an MCP server to your LLM chat UI
     - Create x402-endpoints.json with the APIs you want
     - Set PRIVATE_KEY environment variable
   2. That's it!
 
-  What x402-agent Handles Automatically:
+  What x402-claude-mcp Handles Automatically:
 
   ✅ All x402 Protocol Logic
   - 402 payment required detection
@@ -64,7 +64,7 @@
   export PRIVATE_KEY="0x..."
 
   # 3. Start MCP server
-  npx x402-agent
+  npx x402-claude-mcp
 
   In Your LLM UI Code:
 
@@ -72,10 +72,10 @@
   import { StdioClientTransport } from
   '@modelcontextprotocol/sdk/client/stdio.js';
 
-  // Connect to x402-agent MCP server
+  // Connect to x402-claude-mcp MCP server
   const transport = new StdioClientTransport({
     command: 'npx',
-    args: ['x402-agent'],
+    args: ['x402-claude-mcp'],
     env: {
       PRIVATE_KEY: process.env.PRIVATE_KEY,
       X402_CONFIG_PATH: './x402-endpoints.json'
@@ -88,7 +88,7 @@
   // Now your LLM can use the tools!
   // User: "Make a QR code for google.com"
   // LLM calls: qr_code_generator tool
-  // x402-agent: Handles payment, returns QR code + tx hash
+  // x402-claude-mcp: Handles payment, returns QR code + tx hash
 
-  You literally just run npx x402-agent and define endpoints - it handles ALL
+  You literally just run npx x402-claude-mcp and define endpoints - it handles ALL
    the x402 complexity! 🎯

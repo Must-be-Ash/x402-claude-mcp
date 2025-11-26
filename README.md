@@ -1,4 +1,4 @@
-# x402 Agent MCP Server
+# x402 Claude MCP Server
 
 A reusable **MCP (Model Context Protocol) server** that enables LLM agents to autonomously call x402-protected APIs using CDP embedded wallets. This server exposes configured x402 endpoints as MCP tools, allowing agents to discover and use paid APIs without manual payment handling.
 
@@ -22,13 +22,13 @@ A reusable **MCP (Model Context Protocol) server** that enables LLM agents to au
 ### Global Installation
 
 ```bash
-npm install -g @x402-agent/mcp-server
+npm install -g x402-claude-mcp
 ```
 
 ### Or Use with npx
 
 ```bash
-npx @x402-agent/mcp-server
+npx x402-claude-mcp
 ```
 
 ## Configuration
@@ -36,12 +36,12 @@ npx @x402-agent/mcp-server
 ### 1. Create Configuration Directory
 
 ```bash
-mkdir -p ~/.x402-agent
+mkdir -p ~/.x402-claude-mcp
 ```
 
 ### 2. Create Endpoint Configuration
 
-Create `~/.x402-agent/endpoints.json`:
+Create `~/.x402-claude-mcp/endpoints.json`:
 
 ```json
 {
@@ -87,7 +87,7 @@ Create a `.env` file or set environment variables:
 
 ```bash
 export PRIVATE_KEY="0x..."
-export X402_CONFIG_PATH="~/.x402-agent/endpoints.json"  # Optional, defaults to this
+export X402_CONFIG_PATH="~/.x402-claude-mcp/endpoints.json"  # Optional, defaults to this
 export DEBUG="false"  # Set to "true" for debug logging
 ```
 
@@ -100,12 +100,12 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "x402-agent": {
+    "x402-claude-mcp": {
       "command": "npx",
-      "args": ["-y", "@x402-agent/mcp-server"],
+      "args": ["-y", "x402-claude-mcp"],
       "env": {
         "PRIVATE_KEY": "0x...",
-        "X402_CONFIG_PATH": "~/.x402-agent/endpoints.json"
+        "X402_CONFIG_PATH": "~/.x402-claude-mcp/endpoints.json"
       }
     }
   }
@@ -119,11 +119,11 @@ Edit `~/.claude/settings.json`:
 ```json
 {
   "mcp": {
-    "x402-agent": {
-      "command": "npx @x402-agent/mcp-server",
+    "x402-claude-mcp": {
+      "command": "npx x402-claude-mcp",
       "env": {
         "PRIVATE_KEY": "0x...",
-        "X402_CONFIG_PATH": "~/.x402-agent/endpoints.json"
+        "X402_CONFIG_PATH": "~/.x402-claude-mcp/endpoints.json"
       }
     }
   }
@@ -136,13 +136,13 @@ Edit `~/.codex/config.toml`:
 
 ```toml
 [[mcpServers]]
-name = "x402-agent"
+name = "x402-claude-mcp"
 command = "npx"
-args = ["@x402-agent/mcp-server"]
+args = ["x402-claude-mcp"]
 
 [mcpServers.env]
 PRIVATE_KEY = "0x..."
-X402_CONFIG_PATH = "~/.x402-agent/endpoints.json"
+X402_CONFIG_PATH = "~/.x402-claude-mcp/endpoints.json"
 ```
 
 ## Usage
@@ -181,7 +181,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 // Start MCP server as a child process
 const transport = new StdioClientTransport({
   command: 'npx',
-  args: ['@x402-agent/mcp-server'],
+  args: ['x402-claude-mcp'],
   env: {
     PRIVATE_KEY: process.env.PRIVATE_KEY,
     X402_CONFIG_PATH: './x402-endpoints.json'
@@ -209,7 +209,7 @@ The server looks for `endpoints.json` in the following order:
 1. `X402_CONFIG_PATH` environment variable (explicit path)
 2. `./x402-endpoints.json` (project root)
 3. `./config/endpoints.json` (config folder)
-4. `~/.x402-agent/endpoints.json` (user home, fallback)
+4. `~/.x402-claude-mcp/endpoints.json` (user home, fallback)
 
 ### Production Best Practices
 
@@ -248,7 +248,7 @@ When deploying to production:
 ### Environment Variables
 
 - `PRIVATE_KEY`: Your CDP wallet private key (required)
-- `X402_CONFIG_PATH`: Path to endpoints.json (default: `~/.x402-agent/endpoints.json`)
+- `X402_CONFIG_PATH`: Path to endpoints.json (default: `~/.x402-claude-mcp/endpoints.json`)
 - `DEBUG`: Enable debug logging (default: `false`)
 
 ## Development
@@ -257,8 +257,8 @@ When deploying to production:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/x402-agent.git
-cd x402-agent
+git clone https://github.com/Must-be-Ash/x402-claude-mcp.git
+cd x402-claude-mcp
 
 # Install dependencies
 npm install
@@ -273,7 +273,7 @@ npm run dev
 ### Project Structure
 
 ```
-x402-agent/
+x402-claude-mcp/
 ├── src/
 │   ├── index.ts              # Main entry point
 │   ├── server.ts             # MCP server setup
@@ -302,7 +302,7 @@ x402-agent/
 
 - Check that Node.js >= 18.0.0 is installed: `node --version`
 - Verify PRIVATE_KEY is set correctly
-- Check configuration file syntax: `cat ~/.x402-agent/endpoints.json | jq`
+- Check configuration file syntax: `cat ~/.x402-claude-mcp/endpoints.json | jq`
 
 ### Endpoints Not Appearing
 
@@ -352,7 +352,7 @@ Only endpoints with `"trusted": true` can be called autonomously. This prevents:
 ### Network Security
 
 - All endpoints must use HTTPS
-- Configuration files should have restricted permissions: `chmod 600 ~/.x402-agent/endpoints.json`
+- Configuration files should have restricted permissions: `chmod 600 ~/.x402-claude-mcp/endpoints.json`
 
 ### Production Security Checklist
 
@@ -376,7 +376,7 @@ Contributions are welcome! Please open an issue or pull request.
 ## Support
 
 For issues and questions:
-- GitHub Issues: https://github.com/yourusername/x402-agent/issues
+- GitHub Issues: https://github.com/Must-be-Ash/x402-claude-mcp/issues
 - Documentation: https://docs.cdp.coinbase.com/x402/
 
 ## Related Projects
@@ -384,4 +384,4 @@ For issues and questions:
 - [x402 Protocol](https://docs.cdp.coinbase.com/x402/)
 - [Coinbase Developer Platform](https://docs.cdp.coinbase.com/)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
-# x402-agent
+# x402-claude-mcp

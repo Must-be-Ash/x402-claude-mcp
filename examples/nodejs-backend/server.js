@@ -16,11 +16,11 @@ let mcpClient = null;
  */
 async function initializeMCP() {
   try {
-    console.log('Starting x402 Agent MCP Server...');
+    console.log('Starting x402 Claude MCP Server...');
 
     const transport = new StdioClientTransport({
       command: 'npx',
-      args: ['@x402-agent/mcp-server'],
+      args: ['x402-claude-mcp'],
       env: {
         PRIVATE_KEY: process.env.PRIVATE_KEY,
         X402_CONFIG_PATH: process.env.X402_CONFIG_PATH || './endpoints.json'

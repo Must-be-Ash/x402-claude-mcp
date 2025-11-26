@@ -2,7 +2,7 @@
 
   What Developers Get
 
-  npm install @x402-agent/mcp-server
+  npm install x402-claude-mcp
 
   Developers get:
 

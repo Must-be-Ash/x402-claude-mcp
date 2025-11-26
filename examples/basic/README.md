@@ -13,21 +13,21 @@ This example shows the simplest way to use the x402 Agent MCP Server with Claude
 ### 1. Install the MCP server globally or use npx
 
 ```bash
-npm install -g @x402-agent/mcp-server
+npm install -g x402-claude-mcp
 ```
 
 Or use with npx (no installation required):
 ```bash
-npx @x402-agent/mcp-server
+npx x402-claude-mcp
 ```
 
 ### 2. Create your endpoints configuration
 
-Copy the `endpoints.json` file from this directory to `~/.x402-agent/endpoints.json`:
+Copy the `endpoints.json` file from this directory to `~/.x402-claude-mcp/endpoints.json`:
 
 ```bash
-mkdir -p ~/.x402-agent
-cp endpoints.json ~/.x402-agent/endpoints.json
+mkdir -p ~/.x402-claude-mcp
+cp endpoints.json ~/.x402-claude-mcp/endpoints.json
 ```
 
 ### 3. Set your CDP private key
@@ -48,9 +48,9 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "x402-agent": {
+    "x402-claude-mcp": {
       "command": "npx",
-      "args": ["-y", "@x402-agent/mcp-server"],
+      "args": ["-y", "x402-claude-mcp"],
       "env": {
         "PRIVATE_KEY": "your-private-key-here"
       }
@@ -96,5 +96,5 @@ All payments are logged and can be verified on BaseScan:
 - Verify private key format (should start with 0x)
 
 ### Configuration errors
-- Validate JSON syntax with: `cat ~/.x402-agent/endpoints.json | jq`
-- Check file permissions: `chmod 600 ~/.x402-agent/endpoints.json`
+- Validate JSON syntax with: `cat ~/.x402-claude-mcp/endpoints.json | jq`
+- Check file permissions: `chmod 600 ~/.x402-claude-mcp/endpoints.json`
