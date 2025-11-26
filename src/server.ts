@@ -16,7 +16,7 @@ const packageJson = JSON.parse(
  */
 export function createMCPServer(): McpServer {
   const server = new McpServer({
-    name: 'x402-agent',
+    name: 'x402-claude-mcp',
     version: packageJson.version,
   });
 

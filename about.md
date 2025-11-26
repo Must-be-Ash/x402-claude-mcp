@@ -27,3 +27,5 @@
 
   Key benefit: Developers building AI agents can integrate paid APIs without writing any payment code - just define the
   endpoints and let the MCP server handle payments.
+
+  

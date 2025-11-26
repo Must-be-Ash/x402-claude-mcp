@@ -25,7 +25,7 @@ const packageJson = JSON.parse(
 );
 
 /**
- * Main entry point for the x402 Agent MCP Server
+ * Main entry point for the x402 Claude MCP Server
  */
 async function main() {
   try {
@@ -36,18 +36,18 @@ async function main() {
     config();
     console.log = originalLog;
 
-    logger.info('Starting x402 Agent MCP Server...');
+    logger.info('Starting x402 Claude MCP Server...');
 
     // Support multiple config locations in priority order:
     // 1. Explicit env var (X402_CONFIG_PATH)
     // 2. Project root (./x402-endpoints.json)
     // 3. Config folder (./config/endpoints.json)
-    // 4. User home (~/.x402-agent/endpoints.json) - fallback
+    // 4. User home (~/.x402-claude-mcp/endpoints.json) - fallback
     const configPaths = [
       process.env.X402_CONFIG_PATH,
       join(process.cwd(), 'x402-endpoints.json'),
       join(process.cwd(), 'config', 'endpoints.json'),
-      join(homedir(), '.x402-agent', 'endpoints.json'),
+      join(homedir(), '.x402-claude-mcp', 'endpoints.json'),
     ].filter(Boolean) as string[];
 
     // Find the first config file that exists
@@ -144,7 +144,7 @@ async function main() {
 
     // Set up graceful shutdown
     const shutdown = async () => {
-      logger.info('Shutting down x402 Agent MCP Server...');
+      logger.info('Shutting down x402 Claude MCP Server...');
       try {
         await server.close();
         logger.info('Server closed successfully');
@@ -164,7 +164,7 @@ async function main() {
     logger.info('Connecting to stdio transport...');
     await server.connect(transport);
 
-    logger.info('x402 Agent MCP Server is ready', {
+    logger.info('x402 Claude MCP Server is ready', {
       version: packageJson.version,
       endpoints: registry.getAllEndpoints().map(e => e.id),
     });
