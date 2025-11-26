@@ -13,7 +13,7 @@ export interface WalletConfig {
   /** Network to use for transactions */
   network: 'base' | 'base-sepolia' | 'ethereum' | 'sepolia';
 
-  /** Private key for the wallet (can be literal or environment variable like ${CDP_PRIVATE_KEY}) */
+  /** Private key for the wallet (can be literal or environment variable like ${PRIVATE_KEY}) */
   privateKey: string;
 }
 

@@ -2,7 +2,7 @@
   "wallet": {
     "provider": "cdp-embedded",
     "network": "base",
-    "privateKey": "${CDP_PRIVATE_KEY}"
+    "privateKey": "${PRIVATE_KEY}"
   },
   "endpoints": [
       {

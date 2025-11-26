@@ -1,0 +1,33 @@
+{
+  "wallet": {
+    "provider": "cdp-embedded",
+    "network": "base",
+    "privateKey": "${PRIVATE_KEY}"
+  },
+  "endpoints": [
+    {
+      "id": "minifetch_extract_metadata",
+      "name": "Extract URL Metadata",
+      "url": "https://minifetch.com/api/v1/x402/extract/url-metadata",
+      "method": "GET",
+      "description": "Fetch and extract HTML metadata from a specified URL. Returns all HTML meta tags, Open Graph tags, Twitter tags, headings, image tags, and response headers.",
+      "category": "web-scraping",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The URL from which to extract HTML metadata"
+          },
+          "includeResponseBody": {
+            "type": "string",
+            "description": "If set to 'true', includes the full HTML response body"
+          }
+        },
+        "required": ["url"]
+      },
+      "estimatedCost": "$0.01",
+      "trusted": true
+    }
+  ]
+}

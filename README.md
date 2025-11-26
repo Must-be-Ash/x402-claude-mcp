@@ -48,31 +48,31 @@ Create `~/.x402-agent/endpoints.json`:
   "wallet": {
     "provider": "cdp-embedded",
     "network": "base",
-    "privateKey": "${CDP_PRIVATE_KEY}"
+    "privateKey": "${PRIVATE_KEY}"
   },
   "endpoints": [
     {
-      "id": "firecrawl_search",
-      "name": "Web Search",
-      "url": "https://api.firecrawl.dev/v2/x402/search",
-      "method": "POST",
-      "description": "Search the web for current information using Firecrawl. Returns recent web results with titles, URLs, and snippets.",
-      "category": "search",
+      "id": "minifetch_extract_metadata",
+      "name": "Extract URL Metadata",
+      "url": "https://minifetch.com/api/v1/x402/extract/url-metadata",
+      "method": "GET",
+      "description": "Fetch and extract HTML metadata from a specified URL. Returns all HTML meta tags, Open Graph tags, Twitter tags, headings, image tags, and response headers. Set includeResponseBody=true to return entire response body as a string. Useful for SEO and AI research projects.",
+      "category": "web-scraping",
       "parameters": {
         "type": "object",
         "properties": {
-          "query": {
+          "url": {
             "type": "string",
-            "description": "The search query"
+            "description": "The URL from which to extract HTML metadata"
           },
-          "maxResults": {
-            "type": "number",
-            "description": "Maximum number of results (default: 10)"
+          "includeResponseBody": {
+            "type": "string",
+            "description": "If set to 'true', includes the full HTML response body as a string in the result"
           }
         },
-        "required": ["query"]
+        "required": ["url"]
       },
-      "estimatedCost": "$0.01-$0.05",
+      "estimatedCost": "$0.01",
       "trusted": true
     }
   ]
@@ -86,7 +86,7 @@ See `config/endpoints.example.json` for a complete example with multiple endpoin
 Create a `.env` file or set environment variables:
 
 ```bash
-export CDP_PRIVATE_KEY="0x..."
+export PRIVATE_KEY="0x..."
 export X402_CONFIG_PATH="~/.x402-agent/endpoints.json"  # Optional, defaults to this
 export DEBUG="false"  # Set to "true" for debug logging
 ```
@@ -104,7 +104,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "@x402-agent/mcp-server"],
       "env": {
-        "CDP_PRIVATE_KEY": "0x...",
+        "PRIVATE_KEY": "0x...",
         "X402_CONFIG_PATH": "~/.x402-agent/endpoints.json"
       }
     }
@@ -122,7 +122,7 @@ Edit `~/.claude/settings.json`:
     "x402-agent": {
       "command": "npx @x402-agent/mcp-server",
       "env": {
-        "CDP_PRIVATE_KEY": "0x...",
+        "PRIVATE_KEY": "0x...",
         "X402_CONFIG_PATH": "~/.x402-agent/endpoints.json"
       }
     }
@@ -141,7 +141,7 @@ command = "npx"
 args = ["@x402-agent/mcp-server"]
 
 [mcpServers.env]
-CDP_PRIVATE_KEY = "0x..."
+PRIVATE_KEY = "0x..."
 X402_CONFIG_PATH = "~/.x402-agent/endpoints.json"
 ```
 
@@ -150,11 +150,11 @@ X402_CONFIG_PATH = "~/.x402-agent/endpoints.json"
 Once configured, your LLM agent can autonomously use the endpoints:
 
 ```
-User: "Search for the latest AI news and summarize the top 3 results"
+User: "Extract metadata from https://example.com and tell me about the page"
 
-Agent: [Calls firecrawl_search tool]
+Agent: [Calls minifetch_extract_metadata tool]
        [Payment automatically handled via x402]
-       [Receives results and summarizes]
+       [Receives metadata and summarizes]
 ```
 
 The agent will:
@@ -162,6 +162,64 @@ The agent will:
 2. Call endpoints via `tools/call`
 3. Handle 402 payment responses automatically
 4. Return results to the user
+
+## Production Deployment
+
+### For Node.js Applications
+
+Install the MCP SDK and integrate the x402 agent into your backend:
+
+```bash
+npm install @modelcontextprotocol/sdk
+```
+
+```typescript
+import { spawn } from 'child_process';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+
+// Start MCP server as a child process
+const transport = new StdioClientTransport({
+  command: 'npx',
+  args: ['@x402-agent/mcp-server'],
+  env: {
+    PRIVATE_KEY: process.env.PRIVATE_KEY,
+    X402_CONFIG_PATH: './x402-endpoints.json'
+  }
+});
+
+const client = new Client({ name: 'my-app', version: '1.0.0' }, {});
+await client.connect(transport);
+
+// Call x402-protected endpoints
+const result = await client.callTool({
+  name: 'minifetch_extract_metadata',
+  arguments: { url: 'https://example.com' }
+});
+
+console.log('Result:', result.content);
+console.log('Transaction:', result.txHash);
+console.log('BaseScan:', `https://basescan.org/tx/${result.txHash}`);
+```
+
+### Configuration Paths
+
+The server looks for `endpoints.json` in the following order:
+
+1. `X402_CONFIG_PATH` environment variable (explicit path)
+2. `./x402-endpoints.json` (project root)
+3. `./config/endpoints.json` (config folder)
+4. `~/.x402-agent/endpoints.json` (user home, fallback)
+
+### Production Best Practices
+
+When deploying to production:
+
+1. **Add x402-endpoints.json to your repo** (without secrets - use `${PRIVATE_KEY}` template)
+2. **Set PRIVATE_KEY as environment variable** in your deployment platform
+3. **Run the MCP server as a child process** from your backend
+4. **Monitor wallet balance** and set up alerts for low USDC
+5. **Use separate wallets** for dev/staging/prod environments
 
 ## Configuration Reference
 
@@ -189,7 +247,7 @@ The agent will:
 
 ### Environment Variables
 
-- `CDP_PRIVATE_KEY`: Your CDP wallet private key (required)
+- `PRIVATE_KEY`: Your CDP wallet private key (required)
 - `X402_CONFIG_PATH`: Path to endpoints.json (default: `~/.x402-agent/endpoints.json`)
 - `DEBUG`: Enable debug logging (default: `false`)
 
@@ -243,7 +301,7 @@ x402-agent/
 ### Server Not Starting
 
 - Check that Node.js >= 18.0.0 is installed: `node --version`
-- Verify CDP_PRIVATE_KEY is set correctly
+- Verify PRIVATE_KEY is set correctly
 - Check configuration file syntax: `cat ~/.x402-agent/endpoints.json | jq`
 
 ### Endpoints Not Appearing
@@ -274,17 +332,38 @@ Only endpoints with `"trusted": true` can be called autonomously. This prevents:
 - Malicious endpoint injection
 - Unintended payment execution
 
+**Review endpoints carefully before setting `trusted: true`!**
+
 ### Private Key Safety
 
-- Never commit private keys to version control
-- Use environment variables for sensitive data
-- Keep `.env` files out of git (use `.gitignore`)
+✅ **DO**:
+- Use environment variables for private keys (`${PRIVATE_KEY}`)
+- Use separate wallets for dev/staging/prod
+- Monitor wallet balance and set up alerts
+- Keep private keys in secure secret management systems
 - Rotate keys periodically
+
+❌ **DON'T**:
+- Commit private keys to git
+- Hardcode private keys in endpoints.json
+- Share wallets between different applications
+- Use production wallets for testing
 
 ### Network Security
 
 - All endpoints must use HTTPS
 - Configuration files should have restricted permissions: `chmod 600 ~/.x402-agent/endpoints.json`
+
+### Production Security Checklist
+
+- [ ] `PRIVATE_KEY` set as environment variable (not in code)
+- [ ] `endpoints.json` uses `${PRIVATE_KEY}` template
+- [ ] Wallet has sufficient USDC balance for expected usage
+- [ ] Endpoints are marked `trusted: true` only after verification
+- [ ] Monitor transaction logs for unexpected payments
+- [ ] Set up alerts for low USDC balance
+- [ ] Test on testnet (base-sepolia) before production
+- [ ] Use separate wallets for different environments
 
 ## License
 

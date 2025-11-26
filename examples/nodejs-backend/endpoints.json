@@ -1,0 +1,53 @@
+{
+  "wallet": {
+    "provider": "cdp-embedded",
+    "network": "base",
+    "privateKey": "${PRIVATE_KEY}"
+  },
+  "endpoints": [
+    {
+      "id": "minifetch_extract_metadata",
+      "name": "Extract URL Metadata",
+      "url": "https://minifetch.com/api/v1/x402/extract/url-metadata",
+      "method": "GET",
+      "description": "Fetch and extract HTML metadata from a specified URL. Returns all HTML meta tags, Open Graph tags, Twitter tags, headings, image tags, and response headers. Set includeResponseBody=true to return entire response body as a string. Useful for SEO and AI research projects.",
+      "category": "web-scraping",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The URL from which to extract HTML metadata"
+          },
+          "includeResponseBody": {
+            "type": "string",
+            "description": "If set to 'true', includes the full HTML response body as a string in the result"
+          }
+        },
+        "required": ["url"]
+      },
+      "estimatedCost": "$0.01",
+      "trusted": true
+    },
+    {
+      "id": "qr_code_generator",
+      "name": "Generate QR Code",
+      "url": "https://xluihnzwcmxybtygewvy.supabase.co/functions/v1/url-qr-code-generator",
+      "method": "POST",
+      "description": "Generates a QR code image for any URL. Returns the QR code as a base64-encoded PNG data URL that can be directly embedded in HTML or downloaded. Useful for creating shareable QR codes.",
+      "category": "utilities",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The URL to encode in the QR code"
+          }
+        },
+        "required": ["url"]
+      },
+      "estimatedCost": "$0.01",
+      "trusted": true
+    }
+  ]
+}

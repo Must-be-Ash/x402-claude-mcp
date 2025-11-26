@@ -35,7 +35,7 @@ tsx src/index.ts
    - `EndpointRegistry.ts`: Loads and manages endpoint configurations from JSON
    - `validator.ts`: Validates configuration against schema requirements
    - `types.ts`: TypeScript interfaces for Config, Endpoint, WalletConfig
-   - Supports environment variable interpolation (e.g., `${CDP_PRIVATE_KEY}`)
+   - Supports environment variable interpolation (e.g., `${PRIVATE_KEY}`)
 
 3. **Payment System** (`src/payment/`)
    - `WalletManager.ts`: Initializes CDP embedded wallets using viem
@@ -84,7 +84,7 @@ Config files use `${VAR_NAME}` syntax which gets replaced at runtime:
 ```json
 {
   "wallet": {
-    "privateKey": "${CDP_PRIVATE_KEY}"
+    "privateKey": "${PRIVATE_KEY}"
   }
 }
 ```

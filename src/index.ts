@@ -3,7 +3,7 @@
 import { config } from 'dotenv';
 import { homedir } from 'os';
 import { join } from 'path';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { createMCPServer, createStdioTransport } from './server.js';
@@ -38,10 +38,34 @@ async function main() {
 
     logger.info('Starting x402 Agent MCP Server...');
 
-    // Get config path from environment or use default
-    const configPath =
-      process.env.X402_CONFIG_PATH ||
-      join(homedir(), '.x402-agent', 'endpoints.json');
+    // Support multiple config locations in priority order:
+    // 1. Explicit env var (X402_CONFIG_PATH)
+    // 2. Project root (./x402-endpoints.json)
+    // 3. Config folder (./config/endpoints.json)
+    // 4. User home (~/.x402-agent/endpoints.json) - fallback
+    const configPaths = [
+      process.env.X402_CONFIG_PATH,
+      join(process.cwd(), 'x402-endpoints.json'),
+      join(process.cwd(), 'config', 'endpoints.json'),
+      join(homedir(), '.x402-agent', 'endpoints.json'),
+    ].filter(Boolean) as string[];
+
+    // Find the first config file that exists
+    let configPath: string | undefined;
+    for (const path of configPaths) {
+      if (existsSync(path)) {
+        configPath = path;
+        break;
+      }
+    }
+
+    if (!configPath) {
+      throw new ConfigError(
+        'No configuration file found. Tried the following locations:\n' +
+        configPaths.map((p, i) => `${i + 1}. ${p}`).join('\n') +
+        '\n\nPlease create a configuration file. See example at: config/endpoints.example.json'
+      );
+    }
 
     logger.debug('Loading configuration', { path: configPath });
 

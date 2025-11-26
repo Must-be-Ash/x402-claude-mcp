@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "x402-agent": "./dist/index.js"
+    "x402-agent": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -16,19 +16,25 @@
   },
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "x402",
     "payments",
+    "micropayments",
     "cdp",
     "coinbase",
+    "base",
+    "usdc",
     "ai-agent",
     "autonomous",
-    "micropayments"
+    "llm",
+    "web3",
+    "blockchain"
   ],
   "author": "Must-be-Ash (https://twitter.com/must_be_ash)",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Must-be-Ash/x402-agent.git"
+    "url": "git+https://github.com/Must-be-Ash/x402-agent.git"
   },
   "bugs": {
     "url": "https://github.com/Must-be-Ash/x402-agent/issues"
@@ -39,7 +45,9 @@
   },
   "files": [
     "dist/**/*",
-    "config/**/*"
+    "config/**/*",
+    "README.md",
+    "LICENSE"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.22.0",
