@@ -139,6 +139,7 @@ export async function runSetup(): Promise<void> {
         args: ['-y', 'x402-claude-mcp'],
         env: {
           PRIVATE_KEY: privateKey,
+          X402_CONFIG_PATH: configPath,
         },
       };
 
