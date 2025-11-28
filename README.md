@@ -17,6 +17,39 @@ A reusable **MCP (Model Context Protocol) server** that enables LLM agents to au
 - A CDP embedded wallet with USDC balance
 - An MCP-compatible client (Claude Desktop, Claude Code, etc.)
 
+## Quick Start (Recommended)
+
+The easiest way to get started is with the interactive setup wizard:
+
+```bash
+npx x402-claude-mcp setup
+```
+
+**Alternative ways to run setup:**
+```bash
+# If installed globally
+npm install -g x402-claude-mcp
+x402-claude-mcp setup
+
+# Or with short flag
+npx x402-claude-mcp --setup
+npx x402-claude-mcp -s
+
+# Or from local installation
+npm run setup
+```
+
+**What the setup wizard does:**
+- ✅ Creates `~/.x402-claude-mcp/` directory
+- ✅ Generates `endpoints.json` with pre-configured x402 APIs (QR codes, metadata extraction, GIF search, etc.)
+- ✅ Prompts for your CDP wallet private key
+- ✅ Updates `~/Library/Application Support/Claude/claude_desktop_config.json` automatically
+- ✅ Configures the MCP server with proper environment variables
+
+**That's it!** After restarting Claude Desktop, you'll have a wallet and can start using x402-protected APIs.
+
+Look for the 🔌 icon in Claude Desktop to verify the server is running.
+
 ## Installation
 
 ### Global Installation
@@ -31,7 +64,9 @@ npm install -g x402-claude-mcp
 npx x402-claude-mcp
 ```
 
-## Configuration
+## Manual Configuration
+
+> **Note:** We recommend using `npx x402-claude-mcp setup` instead of manual configuration. Use this section only if you prefer manual setup or need custom configuration.
 
 ### 1. Create Configuration Directory
 

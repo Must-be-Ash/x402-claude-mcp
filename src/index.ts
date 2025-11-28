@@ -16,6 +16,7 @@ import { handleCallTool } from './handlers/callTool.js';
 import { logger } from './utils/logger.js';
 import { ConfigError } from './utils/errors.js';
 import { jsonSchemaToZod } from './utils/schemaConverter.js';
+import { runSetup } from './setup.js';
 
 // Get package.json version
 const __filename = fileURLToPath(import.meta.url);
@@ -28,6 +29,12 @@ const packageJson = JSON.parse(
  * Main entry point for the x402 Claude MCP Server
  */
 async function main() {
+  // Check for setup command
+  const args = process.argv.slice(2);
+  if (args.includes('setup') || args.includes('--setup') || args.includes('-s')) {
+    await runSetup();
+    return;
+  }
   try {
     // Load environment variables
     // Silence dotenv output to prevent JSON-RPC protocol corruption

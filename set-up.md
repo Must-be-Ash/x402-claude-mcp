@@ -1,4 +1,23 @@
-  What You Do:
+## Quick Setup (Recommended)
+
+Just run one command:
+
+```bash
+npx x402-claude-mcp setup
+```
+
+This interactive wizard will:
+1. Create the configuration directory
+2. Generate a starter endpoints.json with example APIs
+3. Ask for your wallet private key
+4. Update Claude Desktop's config automatically
+5. Tell you when to restart Claude Desktop
+
+**That's it!** Your Claude Desktop will have a wallet and can autonomously pay for API calls.
+
+---
+
+## What You Do (Manual Setup):
 
   1. In your /Users/ashnouruzi/x402-agent-demo project:
     - Add x402-claude-mcp as an MCP server to your LLM chat UI
