@@ -50,7 +50,7 @@ export function jsonSchemaToZod(schema: JSONSchema) {
 
 /**
  * Converts a single JSON Schema property to a Zod type
- * Supports: string, number, boolean, array, object
+ * Supports: string, number, integer, boolean, array, object
  *
  * @param propSchema - JSON Schema property definition
  * @param propertyPath - Path to property for error messages
@@ -81,6 +81,9 @@ function jsonSchemaPropertyToZod(
     case 'number':
       return z.number();
 
+    case 'integer':
+      return z.number().int();
+
     case 'boolean':
       return z.boolean();
 
@@ -106,7 +109,7 @@ function jsonSchemaPropertyToZod(
     default:
       throw new SchemaConversionError(
         `Unsupported JSON Schema type "${type}" for property "${propertyPath}". ` +
-        `Supported types: string, number, boolean, array, object`,
+        `Supported types: string, number, integer, boolean, array, object`,
         type,
         propertyPath
       );

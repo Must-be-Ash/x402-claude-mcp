@@ -21,7 +21,7 @@ export interface WalletConfig {
  * JSON Schema definition for endpoint parameters
  */
 export interface JSONSchema {
-  type: 'object' | 'string' | 'number' | 'boolean' | 'array';
+  type: 'object' | 'string' | 'number' | 'integer' | 'boolean' | 'array';
   properties?: Record<string, JSONSchema>;
   required?: string[];
   description?: string;
