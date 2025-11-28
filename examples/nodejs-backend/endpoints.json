@@ -33,7 +33,7 @@
       "id": "qr_code_generator",
       "name": "Generate QR Code",
       "url": "https://xluihnzwcmxybtygewvy.supabase.co/functions/v1/url-qr-code-generator",
-      "method": "POST",
+      "method": "GET",
       "description": "Generates a QR code image for any URL. Returns the QR code as a base64-encoded PNG data URL that can be directly embedded in HTML or downloaded. Useful for creating shareable QR codes.",
       "category": "utilities",
       "parameters": {

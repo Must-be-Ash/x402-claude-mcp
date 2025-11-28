@@ -1,5 +1,5 @@
 import type { WalletClient } from 'viem';
-import { wrapFetchWithPayment, createSigner } from 'x402-fetch';
+import { wrapFetchWithPayment, createSigner, type Signer } from 'x402-fetch';
 import type { Endpoint, EndpointCallResult } from '../registry/types.js';
 import { PaymentError, NetworkError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
@@ -11,13 +11,15 @@ import { retryWithBackoff } from '../utils/retry.js';
 export class PaymentHandler {
   private walletClient: WalletClient;
   private wrappedFetch: typeof fetch;
+  private signer: Signer;
 
   /**
    * Private constructor - use create() factory method instead
    */
-  private constructor(walletClient: WalletClient, wrappedFetch: typeof fetch) {
+  private constructor(walletClient: WalletClient, wrappedFetch: typeof fetch, signer: Signer) {
     this.walletClient = walletClient;
     this.wrappedFetch = wrappedFetch;
+    this.signer = signer;
   }
 
   /**
@@ -38,7 +40,7 @@ export class PaymentHandler {
     // Wrap fetch with x402 payment support
     const wrappedFetch = wrapFetchWithPayment(fetch, signer);
 
-    return new PaymentHandler(walletClient, wrappedFetch);
+    return new PaymentHandler(walletClient, wrappedFetch, signer);
   }
 
   /**
@@ -101,7 +103,7 @@ export class PaymentHandler {
       }
 
       // Prepare request options
-      const requestOptions: RequestInit = {
+      const requestOptions: RequestInit & { duplex?: string } = {
         method: endpoint.method,
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +113,8 @@ export class PaymentHandler {
       // Add body for POST/PUT/PATCH requests
       if (['POST', 'PUT', 'PATCH'].includes(endpoint.method)) {
         requestOptions.body = JSON.stringify(params);
-        logger.debug('Request body for POST/PUT/PATCH', {
+        requestOptions.duplex = 'half'; // Required for fetch with body
+        logger.info('Request body for POST/PUT/PATCH', {
           endpoint: endpoint.id,
           params: params,
           body: requestOptions.body,
@@ -119,7 +122,31 @@ export class PaymentHandler {
       }
 
       // Make request with x402 payment support
+      logger.info('Making request', {
+        endpoint: endpoint.id,
+        url: url,
+        method: requestOptions.method,
+        headers: requestOptions.headers,
+        body: requestOptions.body,
+      });
+
       const response = await this.wrappedFetch(url, requestOptions);
+
+      logger.info('Request completed', {
+        endpoint: endpoint.id,
+        status: response.status,
+        statusText: response.statusText,
+      });
+
+      // If error, log response body
+      if (!response.ok) {
+        const errorText = await response.clone().text();
+        logger.error('Request failed with error response', {
+          endpoint: endpoint.id,
+          status: response.status,
+          errorBody: errorText,
+        });
+      }
 
       // Extract payment info from headers
       const paymentInfo = this.extractPaymentInfo(response);
