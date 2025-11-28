@@ -51,6 +51,7 @@ export class PaymentHandler {
     logger.info(`Calling endpoint: ${endpoint.id}`, {
       url: endpoint.url,
       method: endpoint.method,
+      params: params,
     });
 
     try {
@@ -110,6 +111,11 @@ export class PaymentHandler {
       // Add body for POST/PUT/PATCH requests
       if (['POST', 'PUT', 'PATCH'].includes(endpoint.method)) {
         requestOptions.body = JSON.stringify(params);
+        logger.debug('Request body for POST/PUT/PATCH', {
+          endpoint: endpoint.id,
+          params: params,
+          body: requestOptions.body,
+        });
       }
 
       // Make request with x402 payment support
