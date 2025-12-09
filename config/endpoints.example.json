@@ -156,6 +156,30 @@
       },
       "estimatedCost": "$0.05",
       "trusted": true
+    },
+    {
+      "id": "snack_money_payment",
+      "name": "Snack Money Payment",
+      "url": "https://api.snack.money/payments/x/pay",
+      "method": "POST",
+      "description": "Process payments through Snack Money payment gateway to X (Twitter) accounts. Sends USDC payments to specified X account holders.",
+      "category": "payments",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Payment amount in USDC"
+          },
+          "receiver": {
+            "type": "string",
+            "description": "X (Twitter) account name (e.g., @username or username)"
+          }
+        },
+        "required": ["amount", "receiver"]
+      },
+      "estimatedCost": "variable",
+      "trusted": true
     }
   ]
 }
