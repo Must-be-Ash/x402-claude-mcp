@@ -1,5 +1,7 @@
 # x402 Claude MCP Server
 
+> **Outdated, not maintained.** This is an x402 v1 example. x402 v2 has since been released; we recommend updating to v2 ([migration guide](https://docs.x402.org/guides/migration-v1-to-v2)).
+
 A reusable **MCP (Model Context Protocol) server** that enables LLM agents to autonomously call x402-protected APIs using CDP embedded wallets. This server exposes configured x402 endpoints as MCP tools, allowing agents to discover and use paid APIs without manual payment handling.
 
 ## Features
